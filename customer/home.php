@@ -100,14 +100,14 @@ $result = mysqli_query($conn, $sql);
     }
 
     echo '<div class="p-5 col-lg-3 col-md-4 col-sm-6">'; 
-    echo '<div class="card" style="height: 350px; margin-bottom: 20px; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">';
+    echo '<div class="card" style="height: 400px; margin-bottom: 20px; padding: 40px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">';
     echo '<div class="row">';
     echo '<div class="col-12">';
     echo '<img src="../seller/' . $row["image"] . '" alt="Phone Image" style="width: 100%; height: 200px; object-fit: cover; border-radius: 5px;">';
     echo '</div>';
     echo '<div class="col-12">';
-    echo '<h5 class="card-title fw-bold">' . $row["brand"] . '<br><br>' . $row["model"] . '</h5>';
-    echo '<p class="card-text"><strong>Price:</strong> $' . $row["price"] . '</p>';
+    echo '<h5 class="card-title"><b>' . $row["brand"] . '</b><br><br>' . $row["model"] . '</h5>';
+    echo '<p class="card-text"><strong>Price:</strong> Php ' . $row["price"] . '.00</p>';
     if ($row['quantity'] == '0') {
       echo '<p class="card-text"><i>Out of stock</i></p>';
     } else {
