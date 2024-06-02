@@ -2,7 +2,6 @@
 session_start();
 include 'config.php';
 
-// Initialize variables
 $userId = $f_name = $l_name = '';
 
 if (isset($_SESSION['user_id'])) {
@@ -16,7 +15,6 @@ if (isset($_SESSION['user_id'])) {
   }
 }
 
-// Fetch the phone models from the database
 $sql = "SELECT * FROM phones";
 $result = mysqli_query($conn, $sql);
 
@@ -95,20 +93,20 @@ $result = mysqli_query($conn, $sql);
   echo '<div class="container">';
   echo '<div class="row">';
 
-  $count = 0; // Counter to create a new row after every 3 or 4 cards
+  $count = 0; 
   while ($row = mysqli_fetch_assoc($phoneResult)) {
-    if ($count % 4 == 0 && $count != 0) { // Change 4 to 3 if you want 3 cards per row
+    if ($count % 4 == 0 && $count != 0) { 
       echo '</div><div class="row">';
     }
 
-    echo '<div class="p-5 col-lg-3 col-md-4 col-sm-6">'; // Adjust column width based on your preference
+    echo '<div class="p-5 col-lg-3 col-md-4 col-sm-6">'; 
     echo '<div class="card" style="height: 350px; margin-bottom: 20px; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">';
     echo '<div class="row">';
     echo '<div class="col-12">';
     echo '<img src="../seller/' . $row["image"] . '" alt="Phone Image" style="width: 100%; height: 200px; object-fit: cover; border-radius: 5px;">';
     echo '</div>';
     echo '<div class="col-12">';
-    echo '<h5 class="card-title fw-bold">' . $row["brand"] . ' ' . $row["model"] . '</h5>';
+    echo '<h5 class="card-title fw-bold">' . $row["brand"] . '<br><br>' . $row["model"] . '</h5>';
     echo '<p class="card-text"><strong>Price:</strong> $' . $row["price"] . '</p>';
     if ($row['quantity'] == '0') {
       echo '<p class="card-text"><i>Out of stock</i></p>';
@@ -127,7 +125,7 @@ $result = mysqli_query($conn, $sql);
     $count++;
   }
 
-  echo '</div>'; // Close the last row
+  echo '</div>'; 
   echo '</div>';
   ?>
 
@@ -200,7 +198,7 @@ $result = mysqli_query($conn, $sql);
               text: 'Order placed successfully!',
               timer: 1500
             }).then(function () {
-              window.location.href = 'home.php'; // Redirect to order.php
+              window.location.href = 'home.php'; 
             });
           },
           error: function (xhr, status, error) {

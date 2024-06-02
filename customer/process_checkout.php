@@ -4,7 +4,6 @@ include 'config.php';
 if (isset($_GET['order_id'])) {
     $orderId = $_GET['order_id'];
     
-    // Update the order to be En Route and the order status to Pending
     $sql = "UPDATE checkout SET status='Checked Out', order_status='Pending' WHERE id=$orderId";
     
     if (mysqli_query($conn, $sql)) {
