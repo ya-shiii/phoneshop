@@ -70,27 +70,9 @@ $result = mysqli_query($conn, $sql);
       </div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-          <?php
-          if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-              echo '<li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">' . $row["model"] . ' <span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" class="checkout-button"  data-toggle="modal" data-target="#checkoutModal"
-                                           data-phoneid="' . $row["phone_id"] . '" 
-                                           data-brand="' . $row["brand"] . '" 
-                                           data-model="' . $row["model"] . '">Add to Cart</a></li>
-                                </ul>
-                              </li>';
-            }
-          } else {
-            echo '<li><a href="#">No items available</a></li>';
-          }
-          ?>
-          <li><a href="home.php">Phones</a></li>
+          <li><a href="home.php">Shop</a></li>
           <li class="active"><a href="cart.php">My Cart</a></li>
           <li><a href="order.php">My Orders</a></li>
-
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
@@ -99,7 +81,7 @@ $result = mysqli_query($conn, $sql);
     </div>
   </nav>
   <div class="container">
-    <h2>My Orders</h2>
+    <h2>My Cart</h2>
     <table class="table table-bordered">
       <thead>
         <tr>

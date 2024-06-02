@@ -46,18 +46,21 @@ $result = mysqli_query($conn, $sql);
   }
 
   .container {
-    background-color: #fff;
-    padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 900px;
     margin: 0 auto;
   }
 
   .navbar {
     margin-bottom: 20px;
   }
+
+  .card {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
 </style>
+
 
 <body>
   <nav class="navbar navbar-inverse">
@@ -71,27 +74,9 @@ $result = mysqli_query($conn, $sql);
       </div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-          <?php
-          if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-              echo '<li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">' . $row["model"] . ' <span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" class="checkout-button"  data-toggle="modal" data-target="#checkoutModal"
-                                           data-phoneid="' . $row["phone_id"] . '" 
-                                           data-brand="' . $row["brand"] . '" 
-                                           data-model="' . $row["model"] . '">Add to Cart</a></li>
-                                </ul>
-                              </li>';
-            }
-          } else {
-            echo '<li><a href="#">No items available</a></li>';
-          }
-          ?>
-          <li class="active"><a href="home.php">Phones</a></li>
+          <li class="active"><a href="home.php">Shop</a></li>
           <li><a href="cart.php">My Cart</a></li>
           <li><a href="order.php">My Orders</a></li>
-
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
@@ -100,56 +85,56 @@ $result = mysqli_query($conn, $sql);
     </div>
   </nav>
 
-  <div class="container">
-    <h2>Available Phones</h2>
+  <h1>Reeve Shop</h1>
 
-    <?php
-    // Fetch phone details
-    $phoneSql = "SELECT * FROM phones";
-    $phoneResult = mysqli_query($conn, $phoneSql);
+  <?php
+  // Fetch phone details
+  $phoneSql = "SELECT * FROM phones";
+  $phoneResult = mysqli_query($conn, $phoneSql);
 
-    if (mysqli_num_rows($phoneResult) > 0) {
-      echo '<table class="table table-bordered">';
-      echo '<thead>';
-      echo '<tr>';
-      echo '<th>Image</th>';
-      echo '<th>Brand</th>';
-      echo '<th>Model</th>';
-      echo '<th>Price</th>';
-      echo '<th>Action</th>';
-      echo '</tr>';
-      echo '</thead>';
-      echo '<tbody>';
+  echo '<div class="container">';
+  echo '<div class="row">';
 
-      while ($row = mysqli_fetch_assoc($phoneResult)) {
-        echo '<tr>';
-        echo '<td><img src="../seller/' . $row["image"] . '" alt="Phone Image" width="100px"></td>';
-        echo '<td>' . $row["brand"] . '</td>';
-        echo '<td>' . $row["model"] . '</td>';
-        echo '<td>' . $row["price"] . '</td>';
-        echo '<td>';
-        if ($row['quantity'] == '0') {
-          echo '<i>Out of stock</i>';
-        } else {
-          echo '<a href="#" data-toggle="modal" data-target="#checkoutModal" 
-            data-phoneid="' . $row["phone_id"] . '" 
-            data-brand="' . $row["brand"] . '" 
-            data-model="' . $row["model"] . '" 
-            class="btn btn-primary checkout-button">Add to Cart</a>';
-
-        }
-        echo '</td>';
-        echo '</tr>';
-      }
-
-      echo '</tbody>';
-      echo '</table>';
-    } else {
-      echo "No phones available";
+  $count = 0; // Counter to create a new row after every 3 or 4 cards
+  while ($row = mysqli_fetch_assoc($phoneResult)) {
+    if ($count % 4 == 0 && $count != 0) { // Change 4 to 3 if you want 3 cards per row
+      echo '</div><div class="row">';
     }
 
-    mysqli_close($conn);
-    ?>
+    echo '<div class="p-5 col-lg-3 col-md-4 col-sm-6">'; // Adjust column width based on your preference
+    echo '<div class="card" style="height: 350px; margin-bottom: 20px; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">';
+    echo '<div class="row">';
+    echo '<div class="col-12">';
+    echo '<img src="../seller/' . $row["image"] . '" alt="Phone Image" style="width: 100%; height: 200px; object-fit: cover; border-radius: 5px;">';
+    echo '</div>';
+    echo '<div class="col-12">';
+    echo '<h5 class="card-title fw-bold">' . $row["brand"] . ' ' . $row["model"] . '</h5>';
+    echo '<p class="card-text"><strong>Price:</strong> $' . $row["price"] . '</p>';
+    if ($row['quantity'] == '0') {
+      echo '<p class="card-text"><i>Out of stock</i></p>';
+    } else {
+      echo '<a href="#" data-toggle="modal" data-target="#checkoutModal" 
+                data-phoneid="' . $row["phone_id"] . '" 
+                data-brand="' . $row["brand"] . '" 
+                data-model="' . $row["model"] . '" 
+                class="btn btn-primary checkout-button">Add to Cart</a>';
+    }
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+
+    $count++;
+  }
+
+  echo '</div>'; // Close the last row
+  echo '</div>';
+  ?>
+
+
+
+
+
   </div>
 
   <!-- Checkout Modal -->

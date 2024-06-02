@@ -14,10 +14,6 @@ if (isset($_SESSION['user_id'])) {
   }
 }
 
-// Fetch the phone models from the database
-$sql = "SELECT * FROM phones";
-$result = mysqli_query($conn, $sql);
-
 ?>
 
 <!DOCTYPE html>
@@ -59,7 +55,7 @@ $result = mysqli_query($conn, $sql);
 </style>
 
 <body>
-<nav class="navbar navbar-inverse">
+  <nav class="navbar navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -70,27 +66,9 @@ $result = mysqli_query($conn, $sql);
       </div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-          <?php
-          if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-              echo '<li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">' . $row["model"] . ' <span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" class="checkout-button"  data-toggle="modal" data-target="#checkoutModal"
-                                           data-phoneid="' . $row["phone_id"] . '" 
-                                           data-brand="' . $row["brand"] . '" 
-                                           data-model="' . $row["model"] . '">Add to Cart</a></li>
-                                </ul>
-                              </li>';
-            }
-          } else {
-            echo '<li><a href="#">No items available</a></li>';
-          }
-          ?>
-          <li><a href="home.php">Phones</a></li>
+          <li><a href="home.php">Shop</a></li>
           <li><a href="cart.php">My Cart</a></li>
           <li class="active"><a href="order.php">My Orders</a></li>
-
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
@@ -131,7 +109,7 @@ $result = mysqli_query($conn, $sql);
             echo "<td>" . $row['status'] . "</td>";
             echo "<td>";
             if ($row['status'] == 'Cart' && $row['order_status'] == 'Pending') {
-              echo '<button class="btn btn-info checkout-button" data-orderid="' . $row['id'] . '">Checkout Item</button>'; 
+              echo '<button class="btn btn-info checkout-button" data-orderid="' . $row['id'] . '">Checkout Item</button>';
               echo '<button class="btn btn-danger cancel-button" data-orderid="' . $row['id'] . '">Cancel Order</button>';
             } else if ($row['status'] == 'En Route' && $row['order_status'] == 'Pending') {
               echo '<button class="btn btn-success receive-button" data-orderid="' . $row['id'] . '">Receive Item</button>';
