@@ -70,11 +70,10 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="dashboard.php">Reed's Phone Shop</a>
       </div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-          <li><a href="dashboard.php">Home</a></li>
+          <li><a href="dashboard.php">Dashboard</a></li>
           <li><a href="add_phones.php">Add Product</a></li>
           <li class="active"><a href="view.php">View Phones</a></li>
         </ul>

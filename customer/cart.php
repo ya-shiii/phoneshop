@@ -59,7 +59,7 @@ $result = mysqli_query($conn, $sql);
 </style>
 
 <body>
-<nav class="navbar navbar-inverse">
+  <nav class="navbar navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -88,8 +88,8 @@ $result = mysqli_query($conn, $sql);
           }
           ?>
           <li><a href="home.php">Phones</a></li>
-          <li><a href="cart.php">My Cart</a></li>
-          <li class="active"><a href="order.php">My Orders</a></li>
+          <li class="active"><a href="cart.php">My Cart</a></li>
+          <li><a href="order.php">My Orders</a></li>
 
         </ul>
         <ul class="nav navbar-nav navbar-right">
@@ -116,36 +116,44 @@ $result = mysqli_query($conn, $sql);
       </thead>
       <tbody>
         <?php
-        $orderSql = "SELECT * FROM checkout WHERE customer_id='$userId' AND `status` != 'Cart'  ORDER BY id DESC";
+
+        $orderSql = "SELECT * FROM checkout WHERE customer_id='$userId' AND `status` = 'Cart' ORDER BY id DESC";
         $orderResult = mysqli_query($conn, $orderSql);
-        if (mysqli_num_rows($orderResult) > 0) {
-          while ($row = mysqli_fetch_assoc($orderResult)) {
-            echo "<tr>";
-            echo "<td>" . $row['id'] . "</td>";
-            echo "<td>" . $row['phone_id'] . "</td>";
-            echo "<td>" . $row['brand'] . "</td>";
-            echo "<td>" . $row['model'] . "</td>";
-            echo "<td>" . $row['fname'] . "</td>";
-            echo "<td>" . $row['lname'] . "</td>";
-            echo "<td>" . $row['address'] . "</td>";
-            echo "<td>" . $row['status'] . "</td>";
-            echo "<td>";
-            if ($row['status'] == 'Cart' && $row['order_status'] == 'Pending') {
-              echo '<button class="btn btn-info checkout-button" data-orderid="' . $row['id'] . '">Checkout Item</button>'; 
-              echo '<button class="btn btn-danger cancel-button" data-orderid="' . $row['id'] . '">Cancel Order</button>';
-            } else if ($row['status'] == 'En Route' && $row['order_status'] == 'Pending') {
-              echo '<button class="btn btn-success receive-button" data-orderid="' . $row['id'] . '">Receive Item</button>';
-            } else {
-              echo $row['order_status'];
+
+        if ($orderResult) {
+          if (mysqli_num_rows($orderResult) > 0) {
+            while ($row = mysqli_fetch_assoc($orderResult)) {
+              echo "<tr>";
+              echo "<td>" . htmlspecialchars($row['id']) . "</td>";
+              echo "<td>" . htmlspecialchars($row['phone_id']) . "</td>";
+              echo "<td>" . htmlspecialchars($row['brand']) . "</td>";
+              echo "<td>" . htmlspecialchars($row['model']) . "</td>";
+              echo "<td>" . htmlspecialchars($row['fname']) . "</td>";
+              echo "<td>" . htmlspecialchars($row['lname']) . "</td>";
+              echo "<td>" . htmlspecialchars($row['address']) . "</td>";
+              echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+              echo "<td>";
+              if ($row['status'] == 'Cart' && $row['order_status'] == 'Pending') {
+                echo '<button class="btn btn-info checkout-button" data-orderid="' . htmlspecialchars($row['id']) . '">Checkout Item</button>';
+                echo '<button class="btn btn-danger cancel-button" data-orderid="' . htmlspecialchars($row['id']) . '">Cancel Order</button>';
+              } else if ($row['status'] == 'En Route' && $row['order_status'] == 'Pending') {
+                echo '<button class="btn btn-success receive-button" data-orderid="' . htmlspecialchars($row['id']) . '">Receive Item</button>';
+              } else {
+                echo htmlspecialchars($row['order_status']);
+              }
+              echo "</td>";
+              echo "</tr>";
             }
-            echo "</td>";
-            echo "</tr>";
+          } else {
+            echo "<tr><td colspan='9'>No orders found</td></tr>";
           }
         } else {
-          echo "<tr><td colspan='9'>No orders found</td></tr>";
+          echo "Error: " . mysqli_error($conn);
         }
+
         mysqli_close($conn);
         ?>
+
       </tbody>
     </table>
   </div>
@@ -165,7 +173,7 @@ $result = mysqli_query($conn, $sql);
               text: 'Order checked out successfully!',
               timer: 1500
             }).then(function () {
-              window.location.href = 'order.php';
+              window.location.href = 'cart.php';
             });
           },
           error: function (xhr, status, error) {
@@ -191,7 +199,7 @@ $result = mysqli_query($conn, $sql);
               text: 'Order received successfully!',
               timer: 1500
             }).then(function () {
-              window.location.href = 'order.php';
+              window.location.href = 'cart.php';
             });
           },
           error: function (xhr, status, error) {
@@ -218,7 +226,7 @@ $result = mysqli_query($conn, $sql);
               text: 'Order cancelled successfully!',
               timer: 1500
             }).then(function () {
-              window.location.href = 'order.php';
+              window.location.href = 'cart.php';
             });
           },
           error: function (xhr, status, error) {

@@ -71,14 +71,13 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="dashboard.php">Reed's Phone Shop</a>
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li><a href="dashboard.php">Home</a></li>
+                    <li><a href="dashboard.php">Dashboard</a></li>
                     <li class="active"><a href="add_phones.php">Add Product</a></li>
-                    <!-- Updated link to point to the add_phones.php file -->
                     <li><a href="view.php">View Phones</a></li>
+                    <li><a href="orders.php">View Orders</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>

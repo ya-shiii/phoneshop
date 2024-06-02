@@ -19,7 +19,7 @@ if (isset($_SESSION['user_id'])) {
 <html lang="en">
 
 <head>
-  <title>Dashboard - Reed's Phone Shop</title>
+  <title>Orders List</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -54,28 +54,28 @@ if (isset($_SESSION['user_id'])) {
 </style>
 
 <body>
-<nav class="navbar navbar-inverse">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div>
-            <div class="collapse navbar-collapse" id="myNavbar">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="dashboard.php">Dashboard</a></li>
-                    <li><a href="add_phones.php">Add Product</a></li>
-                    <!-- Updated link to point to the add_phones.php file -->
-                    <li><a href="view.php">View Phones</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a href="dashboard.php">Dashboard</a></li>
+          <li><a href="add_phones.php">Add Product</a></li>
+          <li><a href="view.php">View Phones</a></li>
+          <li class="active"><a href="orders.php">View Orders</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
   <div class="container">
     <h2>My Orders</h2>
     <table class="table table-bordered">
@@ -108,10 +108,11 @@ if (isset($_SESSION['user_id'])) {
             echo "<td>" . $row['address'] . "</td>";
             echo "<td>" . $row['status'] . "</td>";
             echo "<td>";
-            if ($row['status'] == 'Checked Out' && $row['order_status'] == 'Pending') {
-              echo '<button class="btn btn-info deliver-button" data-orderid="' . $row['id'] . '">Submit for Delivery</button>';
+            if ($row['status'] == 'To Deliver' && $row['order_status'] == 'Pending') {
+              echo '<button class="btn btn-success deliver-button" data-orderid="' . $row['id'] . '">Approve and Deliver</button>';
+              echo '<button class="btn btn-danger delete-button" data-orderid="' . $row['id'] . '">Delete Order</button>';
             } else {
-              echo $row['order_status'];
+              echo '<button class="btn btn-danger delete-button" data-orderid="' . $row['id'] . '">Delete Order</button>';
             }
             echo "</td>";
             echo "</tr>";
@@ -137,10 +138,10 @@ if (isset($_SESSION['user_id'])) {
             Swal.fire({
               icon: 'success',
               title: 'Success',
-              text: 'Order status updated! Please wait for admin approval',
+              text: 'Order status updated to En Route!',
               timer: 1500
             }).then(function () {
-              window.location.href = 'dashboard.php';
+              window.location.href = 'orders.php';
             });
           },
           error: function (xhr, status, error) {
@@ -166,7 +167,7 @@ if (isset($_SESSION['user_id'])) {
               text: 'Order deleted successfully!',
               timer: 1500
             }).then(function () {
-              window.location.href = 'dashboard.php';
+              window.location.href = 'orders.php';
             });
           },
           error: function (xhr, status, error) {

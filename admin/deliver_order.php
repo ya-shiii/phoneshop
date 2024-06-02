@@ -5,7 +5,7 @@ if (isset($_GET['order_id'])) {
     $orderId = $_GET['order_id'];
     
     // Update the order to be En Route with status Pending
-    $sql = "UPDATE checkout SET status='To Deliver', order_status='Pending' WHERE id=$orderId";
+    $sql = "UPDATE checkout SET status='En Route', order_status='Pending' WHERE id=$orderId";
     
     if (mysqli_query($conn, $sql)) {
         echo "Order status updated to En Route!";

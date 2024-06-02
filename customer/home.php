@@ -15,6 +15,11 @@ if (isset($_SESSION['user_id'])) {
     $l_name = $user['lname'];
   }
 }
+
+// Fetch the phone models from the database
+$sql = "SELECT * FROM phones";
+$result = mysqli_query($conn, $sql);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,12 +68,30 @@ if (isset($_SESSION['user_id'])) {
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="home.php">Reed's Phone Shop</a>
       </div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="home.php">Home</a></li>
+          <?php
+          if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+              echo '<li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">' . $row["model"] . ' <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" class="checkout-button"  data-toggle="modal" data-target="#checkoutModal"
+                                           data-phoneid="' . $row["phone_id"] . '" 
+                                           data-brand="' . $row["brand"] . '" 
+                                           data-model="' . $row["model"] . '">Add to Cart</a></li>
+                                </ul>
+                              </li>';
+            }
+          } else {
+            echo '<li><a href="#">No items available</a></li>';
+          }
+          ?>
+          <li class="active"><a href="home.php">Phones</a></li>
+          <li><a href="cart.php">My Cart</a></li>
           <li><a href="order.php">My Orders</a></li>
+
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
@@ -76,6 +99,7 @@ if (isset($_SESSION['user_id'])) {
       </div>
     </div>
   </nav>
+
   <div class="container">
     <h2>Available Phones</h2>
 
@@ -112,7 +136,7 @@ if (isset($_SESSION['user_id'])) {
             data-brand="' . $row["brand"] . '" 
             data-model="' . $row["model"] . '" 
             class="btn btn-primary checkout-button">Add to Cart</a>';
-          
+
         }
         echo '</td>';
         echo '</tr>';
@@ -191,7 +215,7 @@ if (isset($_SESSION['user_id'])) {
               text: 'Order placed successfully!',
               timer: 1500
             }).then(function () {
-              window.location.href = 'order.php'; // Redirect to order.php
+              window.location.href = 'home.php'; // Redirect to order.php
             });
           },
           error: function (xhr, status, error) {
