@@ -1,5 +1,23 @@
+<?php
+session_start();
+include 'config.php';
+
+// Check if the user is logged in and set the session variables
+if (isset($_SESSION['user_id'])) {
+  $userId = $_SESSION['user_id'];
+  $userSql = "SELECT fname, lname FROM users WHERE id=$userId";
+  $userResult = mysqli_query($conn, $userSql);
+  if ($userResult && mysqli_num_rows($userResult) > 0) {
+    $user = mysqli_fetch_assoc($userResult);
+    $f_name = $user['fname'];
+    $l_name = $user['lname'];
+  }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Home - Reed's Phone Shop</title>
   <meta charset="utf-8">
@@ -34,70 +52,163 @@
     margin-bottom: 20px;
   }
 </style>
+
 <body>
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
-      <a class="navbar-brand" href="home.php">Reed's Phone Shop</a>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="home.php">Reed's Phone Shop</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a href="home.php">Home</a></li>
+          <li class="active"><a href="order.php">My Orders</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+        </ul>
+      </div>
     </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="home.php">Home</a></li>
-        <li class="active"><a href="order.php">My Orders</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
-      </ul>
-    </div>
-  </div>
-</nav> 
-<div class="container">
-  <h2>My Orders</h2>
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Phone ID</th>
-        <th>Brand</th>
-        <th>Model</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Address</th>
-        <th>Status</th>
-        <th>Order Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php
-      include 'config.php';
-      $orderSql = "SELECT * FROM checkout";
-      $orderResult = mysqli_query($conn, $orderSql);
-      if (mysqli_num_rows($orderResult) > 0) {
+  </nav>
+  <div class="container">
+    <h2>My Orders</h2>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Phone ID</th>
+          <th>Brand</th>
+          <th>Model</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Address</th>
+          <th>Status</th>
+          <th>Order Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $orderSql = "SELECT * FROM checkout WHERE customer_id='$userId' ORDER BY id DESC";
+        $orderResult = mysqli_query($conn, $orderSql);
+        if (mysqli_num_rows($orderResult) > 0) {
           while ($row = mysqli_fetch_assoc($orderResult)) {
-              echo "<tr>";
-              echo "<td>" . $row['id'] . "</td>";
-              echo "<td>" . $row['phone_id'] . "</td>";
-              echo "<td>" . $row['brand'] . "</td>";
-              echo "<td>" . $row['model'] . "</td>";
-              echo "<td>" . $row['fname'] . "</td>";
-              echo "<td>" . $row['lname'] . "</td>";
-              echo "<td>" . $row['address'] . "</td>";
-              echo "<td>" . $row['status'] . "</td>";
-              echo "<td>" . $row['order_status'] . "</td>";
-              echo "</tr>";
+            echo "<tr>";
+            echo "<td>" . $row['id'] . "</td>";
+            echo "<td>" . $row['phone_id'] . "</td>";
+            echo "<td>" . $row['brand'] . "</td>";
+            echo "<td>" . $row['model'] . "</td>";
+            echo "<td>" . $row['fname'] . "</td>";
+            echo "<td>" . $row['lname'] . "</td>";
+            echo "<td>" . $row['address'] . "</td>";
+            echo "<td>" . $row['status'] . "</td>";
+            echo "<td>";
+            if ($row['status'] == 'Cart' && $row['order_status'] == 'Pending') {
+              echo '<button class="btn btn-info checkout-button" data-orderid="' . $row['id'] . '">Checkout Item</button>'; 
+              echo '<button class="btn btn-danger cancel-button" data-orderid="' . $row['id'] . '">Cancel Order</button>';
+            } else if ($row['status'] == 'En Route' && $row['order_status'] == 'Pending') {
+              echo '<button class="btn btn-success receive-button" data-orderid="' . $row['id'] . '">Receive Item</button>';
+            } else {
+              echo $row['order_status'];
+            }
+            echo "</td>";
+            echo "</tr>";
           }
-      } else {
-          echo "<tr><td colspan='7'>No orders found</td></tr>";
-      }
-      mysqli_close($conn);
-      ?>
-    </tbody>
-  </table>
-</div>
+        } else {
+          echo "<tr><td colspan='9'>No orders found</td></tr>";
+        }
+        mysqli_close($conn);
+        ?>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $('.checkout-button').on('click', function () {
+        var orderId = $(this).data('orderid');
+        $.ajax({
+          type: 'GET',
+          url: 'process_checkout.php',
+          data: { order_id: orderId },
+          success: function (response) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Order checked out successfully!',
+              timer: 1500
+            }).then(function () {
+              window.location.href = 'order.php';
+            });
+          },
+          error: function (xhr, status, error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error checking out order. Please try again.'
+            });
+          }
+        });
+      });
+
+      $('.receive-button').on('click', function () {
+        var orderId = $(this).data('orderid');
+        $.ajax({
+          type: 'GET',
+          url: 'received_order.php',
+          data: { order_id: orderId },
+          success: function (response) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Order received successfully!',
+              timer: 1500
+            }).then(function () {
+              window.location.href = 'order.php';
+            });
+          },
+          error: function (xhr, status, error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error receiving order. Please try again.'
+            });
+          }
+        });
+      });
+
+
+      $('.cancel-button').on('click', function () {
+        var orderId = $(this).data('orderid');
+        $.ajax({
+          type: 'POST',
+          url: 'cancel_order.php',
+          data: { order_id: orderId },
+          success: function (response) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Order cancelled successfully!',
+              timer: 1500
+            }).then(function () {
+              window.location.href = 'order.php';
+            });
+          },
+          error: function (xhr, status, error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error deleting order. Please try again.'
+            });
+          }
+        });
+      });
+    });
+  </script>
 </body>
+
 </html>

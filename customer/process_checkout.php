@@ -1,19 +1,19 @@
 <?php
-include '../conn/config.php';
+include 'config.php';
 
-$phoneId = $_POST['phoneId'];
-$brand = $_POST['checkoutBrand'];
-$model = $_POST['checkoutModel'];
-$fname = $_POST['checkoutFname'];
-$lname = $_POST['checkoutLname'];
-$address = $_POST['checkoutAddress'];
-
-$sql = "INSERT INTO checkout (phone_id, brand, model, fname, lname, address) VALUES ('$phoneId', '$brand', '$model', '$fname', '$lname', '$address')";
-
-if (mysqli_query($conn, $sql)) {
-    echo "Order placed successfully";
+if (isset($_GET['order_id'])) {
+    $orderId = $_GET['order_id'];
+    
+    // Update the order to be En Route and the order status to Pending
+    $sql = "UPDATE checkout SET status='Checked Out', order_status='Pending' WHERE id=$orderId";
+    
+    if (mysqli_query($conn, $sql)) {
+        echo "Order checked out successfully!";
+    } else {
+        echo "Error checking out order: " . mysqli_error($conn);
+    }
 } else {
-    echo "Error placing order: " . mysqli_error($conn);
+    echo "Invalid order ID.";
 }
 
 mysqli_close($conn);

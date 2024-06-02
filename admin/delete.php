@@ -12,12 +12,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rowImage = mysqli_fetch_assoc($resultImage);
     $imageFilename = $rowImage['image'];
 
-
-    $sqlDelete = "DELETE FROM phones WHERE phone_id=$phoneId";
-
-    if (mysqli_query($conn, $sqlDelete)) {
-        unlink("img/$imageFilename"); 
+    // Delete rows from checkout table where phone_id matches
+    $sqlDeleteCheckout = "DELETE FROM checkout WHERE phone_id=$phoneId";
+    if (mysqli_query($conn, $sqlDeleteCheckout)) {
+        // If rows are successfully deleted from checkout table, proceed to delete the phone entry
+        // Prepare and execute delete query
+        $sqlDelete = "DELETE FROM phones WHERE phone_id=$phoneId";
+        if (mysqli_query($conn, $sqlDelete)) {
+            // If phone entry is successfully deleted, delete the associated image file
+            unlink("$imageFilename");
+            // Redirect to view.php
+            echo "<script>window.location.href = 'view.php'</script>";
+        } else {
+            echo "Error deleting phone entry: " . mysqli_error($conn);
+        }
     } else {
+        echo "Error deleting checkout entries: " . mysqli_error($conn);
     }
 }
 
