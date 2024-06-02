@@ -1,0 +1,217 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['UserID'])) {
+    // Redirect to login page if not logged in
+    header('Location: Login.php');
+    exit;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>.:: Allan Rey Sys ::.</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      background-color: #FBF8DD;
+    }
+    .navbar {
+      background-color: #E9C874;
+    }
+    .navbar-brand img {
+      filter: invert(1);
+    }
+    .navbar-dark .navbar-nav .nav-link {
+      color: #A34343;
+    }
+    .navbar-dark .navbar-nav .nav-link:hover {
+      color: #C0D6E8;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #C0D6E8;
+    }
+    img.student-photo {
+      max-width: 100px;
+      max-height: 100px;
+    }
+    .edit-button {
+      background-color: #A34343;
+      color: #FBF8DD;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .edit-button:hover {
+      background-color: #E9C874;
+      color: #A34343;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark">
+  <a class="navbar-brand" href="index.php">
+    <img src="img/logo.png" alt="Logo" style="width:40px;">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <ul class="navbar-nav ml-auto">
+      <?php if($_SESSION['UserType'] == 'admin' || $_SESSION['UserType'] == 'seller') { ?>
+        <li class="nav-item">
+          <a class="nav-link" href="add.php">Add</a>
+        </li>
+      <?php } ?>
+      <li class="nav-item">
+        <a class="nav-link" href="view.php">View</a>
+      </li>
+      <?php if($_SESSION['UserType'] == 'admin') { ?>
+        <li class="nav-item">
+          <a class="nav-link" href="update.php">Update</a>
+        </li>
+      <?php } ?>
+      <?php if($_SESSION['UserType'] == 'admin') { ?>
+        <li class="nav-item">
+          <a class="nav-link" href="delete.php">Delete</a>
+        </li>
+      <?php } ?>
+      <li class="nav-item">
+        <a class="nav-link" href="search.php">Search </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="Logout.php">Logout</a>
+      </li>
+    </ul>
+  </div>  
+</nav>
+<br>
+
+<div class="container">
+  <h1>Update Shirt</h1>
+  
+  <?php
+    $servername = "localhost";
+    $username = "root";
+    $password = "newpassword";
+    $dbname = "reederie";
+
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    
+    if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+    }
+
+    $sql = "SELECT * FROM info";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+      echo "<table>";
+      echo "<tr>";
+      echo "<th>Image</th>";
+      echo "<th>Shirt Name</th>";
+      echo "<th>Size</th>";
+      echo "<th>Color</th>";
+      echo "<th>Action</th>";
+      echo "</tr>";
+      while ($row = $result->fetch_assoc()) {
+          echo "<tr>";
+          echo "<td><img src='Uploads/" . $row["IDno"] . ".png' class='student-photo' id='student-" . $row["IDno"] . "'></td>";
+          echo "<td>" . $row["Shirt"] . "</td>";
+          echo "<td>" . $row["Size"] . "</td>";
+          echo "<td>" . $row["Color"] . "</td>";
+          echo "<td><button class='edit-button' onclick='fillForm(\"" . $row["IDno"] . "\", \"" . $row["Shirt"] . "\", \"" . $row["Size"] . "\", \"" . $row["Color"] . "\", \"" . $row["IDno"] . ".png\")'>Edit</button></td>";
+          echo "</tr>";
+      }
+      echo "</table>";
+    } else {
+      echo "0 results";
+    }
+    $conn->close();
+  ?>
+  
+  <br>
+  
+  <h2>Edit Shirt</h2>
+  <form id="updateForm" action="update2.php" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="id" id="id">
+      Shirt Name: <input type="text" name="shirt" id="shirt"><br>
+      Size: 
+      <select name="size" id="size">
+        <option value="XS">XS</option>
+        <option value="S">S</option>
+        <option value="M">M</option>
+        <option value="L">L</option>
+        <option value="XL">XL</option>
+        <option value="XXL">XXL</option>
+      </select><br>
+      Color: <input type="text" name="color" id="color"><br>
+      <input type="hidden" name="existingPhoto" id="existingPhoto">
+      New Photo: <input type="file" name="newPhoto" id="newPhoto" onchange="previewPhoto(event)"><br>
+      <input type="submit" value="Update" class="btn btn-primary">
+  </form>
+  
+  <img id="photo" src="" class="student-photo"><br>
+
+  <script>
+    function fillForm(id, shirt, size, color, photo) {
+        document.getElementById('id').value = id;
+        document.getElementById('shirt').value = shirt;
+        document.getElementById('size').value = size;
+        document.getElementById('color').value = color;
+        document.getElementById('existingPhoto').value = photo;
+        document.getElementById('photo').src = 'Uploads/' + photo;
+    }
+
+    function previewPhoto(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('photo');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    document.getElementById('updateForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var formData = new FormData(this);
+        
+        fetch('update2.php', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.text())
+          .then(data => {
+              console.log(data);
+              var id = document.getElementById('id').value;
+              var studentImg = document.getElementById('student-' + id);
+              studentImg.src = studentImg.src.split('?')[0] + '?' + new Date().getTime(); // Update image cache
+              alert('Update successful!');
+          }).catch(error => {
+              console.error('Error:', error);
+              alert('Update failed!');
+          });
+    });
+  </script>
+</div>
+
+</body>
+</html>
