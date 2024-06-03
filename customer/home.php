@@ -75,6 +75,7 @@ $result = mysqli_query($conn, $sql);
           <li class="active"><a href="home.php">Shop</a></li>
           <li><a href="cart.php">My Cart</a></li>
           <li><a href="order.php">My Orders</a></li>
+          <li><a href="account.php">My Account</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
@@ -111,8 +112,7 @@ $result = mysqli_query($conn, $sql);
     if ($row['quantity'] == '0') {
       echo '<p class="card-text"><i>Out of stock</i></p>';
     } else {
-      echo '<a href="#" data-toggle="modal" data-target="#checkoutModal" 
-                data-phoneid="' . $row["phone_id"] . '" 
+      echo '<a href="#" data-phoneid="' . $row["phone_id"] . '" 
                 data-brand="' . $row["brand"] . '" 
                 data-model="' . $row["model"] . '" 
                 class="btn btn-primary checkout-button">Add to Cart</a>';
@@ -129,68 +129,29 @@ $result = mysqli_query($conn, $sql);
   echo '</div>';
   ?>
 
-
-
-
-
-  </div>
-
-  <!-- Checkout Modal -->
-  <div id="checkoutModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Add to Cart</h4>
-        </div>
-        <div class="modal-body">
-          <form id="checkoutForm">
-            <input type="hidden" id="phoneId" name="phoneId">
-            <input type="hidden" id="userId" name="userId" value="<?php echo $userId; ?>">
-
-            <label for="checkoutBrand">Brand:</label><br>
-            <input type="text" id="checkoutBrand" name="checkoutBrand" readonly><br>
-
-            <label for="checkoutModel">Model:</label><br>
-            <input type="text" id="checkoutModel" name="checkoutModel" readonly><br>
-
-            <label for="checkoutFname">First Name:</label><br>
-            <input type="text" id="checkoutFname" name="checkoutFname" readonly
-              value="<?php echo htmlspecialchars($f_name); ?>"><br>
-
-            <label for="checkoutLname">Last Name:</label><br>
-            <input type="text" id="checkoutLname" name="checkoutLname" readonly
-              value="<?php echo htmlspecialchars($l_name); ?>"><br>
-
-            <label for="checkoutAddress">Address:</label><br>
-            <input type="text" id="checkoutAddress" name="checkoutAddress" required><br>
-
-            <input type="submit" value="Place Order" class="btn btn-success"><br>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script>
     $(document).ready(function () {
-      $('.checkout-button').on('click', function () {
+      $('.checkout-button').on('click', function (e) {
+        e.preventDefault();
         var phoneId = $(this).data('phoneid');
         var brand = $(this).data('brand');
         var model = $(this).data('model');
+        var userId = '<?php echo $userId; ?>';
+        var fname = '<?php echo htmlspecialchars($f_name); ?>';
+        var lname = '<?php echo htmlspecialchars($l_name); ?>';
 
-        $('#phoneId').val(phoneId);
-        $('#checkoutBrand').val(brand);
-        $('#checkoutModel').val(model);
-      });
-
-      $('#checkoutForm').on('submit', function (e) {
-        e.preventDefault();
-        var formData = $(this).serialize();
         $.ajax({
           type: 'POST',
           url: 'add_to_cart.php',
-          data: formData,
+          data: {
+            phoneId: phoneId,
+            userId: userId,
+            checkoutBrand: brand,
+            checkoutModel: model,
+            checkoutFname: fname,
+            checkoutLname: lname,
+            checkoutAddress: '' // Pass an empty address since it's not provided
+          },
           success: function (response) {
             Swal.fire({
               icon: 'success',
@@ -198,7 +159,7 @@ $result = mysqli_query($conn, $sql);
               text: 'Order placed successfully!',
               timer: 1500
             }).then(function () {
-              window.location.href = 'home.php'; 
+              window.location.href = 'cart.php'; 
             });
           },
           error: function (xhr, status, error) {

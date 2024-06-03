@@ -69,6 +69,7 @@ if (isset($_SESSION['user_id'])) {
                     <li><a href="add_phones.php">Add Product</a></li>
                     <!-- Updated link to point to the add_phones.php file -->
                     <li><a href="view.php">View Phones</a></li>
+                    <li><a href="account.php">My Account</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>

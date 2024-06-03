@@ -73,6 +73,7 @@ $result = mysqli_query($conn, $sql);
           <li><a href="home.php">Shop</a></li>
           <li class="active"><a href="cart.php">My Cart</a></li>
           <li><a href="order.php">My Orders</a></li>
+          <li><a href="account.php">My Account</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
@@ -116,7 +117,11 @@ $result = mysqli_query($conn, $sql);
               echo "<td>" . htmlspecialchars($row['status']) . "</td>";
               echo "<td>";
               if ($row['status'] == 'Cart' && $row['order_status'] == 'Pending') {
-                echo '<button class="btn btn-info checkout-button" data-orderid="' . htmlspecialchars($row['id']) . '">Checkout Item</button>';
+                echo '<button class="btn btn-info checkout-button" data-orderid="' . htmlspecialchars($row['id']) . '" 
+                      data-phoneid="' . htmlspecialchars($row['phone_id']) . '"
+                      data-brand="' . htmlspecialchars($row['brand']) . '"
+                      data-model="' . htmlspecialchars($row['model']) . '"
+                      data-address="' . htmlspecialchars($row['address']) . '">Checkout Item</button>';
                 echo '<button class="btn btn-danger cancel-button" data-orderid="' . htmlspecialchars($row['id']) . '">Cancel Order</button>';
               } else if ($row['status'] == 'En Route' && $row['order_status'] == 'Pending') {
                 echo '<button class="btn btn-success receive-button" data-orderid="' . htmlspecialchars($row['id']) . '">Receive Item</button>';
@@ -140,14 +145,69 @@ $result = mysqli_query($conn, $sql);
     </table>
   </div>
 
+  <!-- Checkout Modal -->
+  <div id="checkoutModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Checkout</h4>
+        </div>
+        <div class="modal-body">
+          <form id="checkoutForm">
+            <input type="hidden" id="orderId" name="orderId">
+            <input type="hidden" id="phoneId" name="phoneId">
+            <input type="hidden" id="userId" name="userId" value="<?php echo $userId; ?>">
+
+            <label for="checkoutBrand">Brand:</label><br>
+            <input type="text" id="checkoutBrand" name="checkoutBrand" readonly><br>
+
+            <label for="checkoutModel">Model:</label><br>
+            <input type="text" id="checkoutModel" name="checkoutModel" readonly><br>
+
+            <label for="checkoutFname">First Name:</label><br>
+            <input type="text" id="checkoutFname" name="checkoutFname" readonly
+              value="<?php echo htmlspecialchars($f_name); ?>"><br>
+
+            <label for="checkoutLname">Last Name:</label><br>
+            <input type="text" id="checkoutLname" name="checkoutLname" readonly
+              value="<?php echo htmlspecialchars($l_name); ?>"><br>
+
+            <label for="checkoutAddress">Address:</label><br>
+            <input type="text" id="checkoutAddress" name="checkoutAddress" required><br>
+
+            <input type="submit" value="Place Order" class="btn btn-success"><br>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     $(document).ready(function () {
       $('.checkout-button').on('click', function () {
         var orderId = $(this).data('orderid');
+        var phoneId = $(this).data('phoneid');
+        var brand = $(this).data('brand');
+        var model = $(this).data('model');
+        var address = $(this).data('address');
+
+        $('#orderId').val(orderId);
+        $('#phoneId').val(phoneId);
+        $('#checkoutBrand').val(brand);
+        $('#checkoutModel').val(model);
+        $('#checkoutAddress').val(address);
+
+        $('#checkoutModal').modal('show');
+      });
+
+      $('#checkoutForm').on('submit', function (e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
         $.ajax({
-          type: 'GET',
+          type: 'POST',
           url: 'process_checkout.php',
-          data: { order_id: orderId },
+          data: formData,
           success: function (response) {
             Swal.fire({
               icon: 'success',
@@ -155,7 +215,7 @@ $result = mysqli_query($conn, $sql);
               text: 'Order checked out successfully!',
               timer: 1500
             }).then(function () {
-              window.location.href = 'cart.php';
+              window.location.href = 'order.php';
             });
           },
           error: function (xhr, status, error) {
@@ -193,7 +253,6 @@ $result = mysqli_query($conn, $sql);
           }
         });
       });
-
 
       $('.cancel-button').on('click', function () {
         var orderId = $(this).data('orderid');

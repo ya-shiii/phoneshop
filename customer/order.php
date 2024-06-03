@@ -69,6 +69,7 @@ if (isset($_SESSION['user_id'])) {
           <li><a href="home.php">Shop</a></li>
           <li><a href="cart.php">My Cart</a></li>
           <li class="active"><a href="order.php">My Orders</a></li>
+          <li><a href="account.php">My Account</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>

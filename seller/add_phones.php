@@ -77,6 +77,7 @@
                     <li><a href="dashboard.php">Dashboard</a></li>
                     <li class="active"><a href="add_phones.php">Add Product</a></li>
                     <li><a href="view.php">View Phones</a></li>
+                    <li><a href="account.php">My Account</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="../logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
